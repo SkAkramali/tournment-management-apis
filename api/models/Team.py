@@ -30,3 +30,7 @@ class Team(Base):
         "Tournament",
         back_populates="teams"
     )
+  players = relationship(
+    "Player",
+    back_populates="team"
+  )
