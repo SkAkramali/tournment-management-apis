@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 from api.core.database import Base
 
@@ -8,3 +8,7 @@ class Tournament(Base):
   name: Mapped[str] = mapped_column(String(50), nullable = False)
   sport: Mapped[str] = mapped_column(String(50), nullable = False)
   season: Mapped[str] = mapped_column(String(50), nullable = False)
+  teams = relationship(
+      "Team",
+      back_populates="tournament"
+  )
