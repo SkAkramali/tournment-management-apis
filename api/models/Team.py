@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import String
 from sqlalchemy import ForeignKey
 
-from api.core.database import Base
+from core.database import Base
 
 
 class Team(Base):
