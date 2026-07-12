@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
-from api.core.database import Base
+from core.database import Base
 
 class Tournament(Base):
   __tablename__ = "tournaments"
