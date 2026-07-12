@@ -1,6 +1,6 @@
 # Apis to support tournament managment systems
 
 - Tech stack
-  python
-  fastapi
-  sqlalchemy
+  1.python
+  2.fastapi  
+  3.sqlalchemy
