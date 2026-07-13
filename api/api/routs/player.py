@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.Player import Player
-# Import both your creation schema and your response schema
 from schemas.Players import PlayerCreate, PlayerResponse 
 
 router = APIRouter(
@@ -27,11 +26,8 @@ def get_player(player_id: int, db: Session = Depends(get_db)) -> PlayerResponse:
     return player
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=PlayerResponse)
-# FIX: Use PlayerCreate schema for incoming request payload validation
 def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)) -> PlayerResponse:
-    # Convert Pydantic payload dictionary into a SQLAlchemy instance
     new_player = Player(**player_in.model_dump()) 
-    
     db.add(new_player)
     db.commit()
     db.refresh(new_player)
