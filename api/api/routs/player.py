@@ -41,3 +41,23 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)) -> Pla
     db.refresh(new_player)
     return new_player
 
+@router.put("/{player_id}", status_code=status.HTTP_200_OK, response_model=PlayerResponse)
+def update_player(player_id: int, player_in: PlayerCreate, db: Session = Depends(get_db)) -> PlayerResponse:
+    stmt = select(Player).where(Player.id == player_id)
+    result = db.execute(stmt).scalar_one_or_none()
+    if result is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Player with Provided id not found"})
+    for key, value in player_in.model_dump().items():
+        setattr(result, key, value)
+    db.commit()
+    db.refresh(result)
+    return result
+
+@router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_player(player_id: int, db: Session = Depends(get_db)):
+   stmt = select(Player).where(Player.id == player_id) 
+   result = db.execute(stmt).scalar_one_or_none()
+   if result is None:
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Player with Provided id not found"})
+   db.delete(result)
+   db.commit()
