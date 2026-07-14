@@ -1,10 +1,12 @@
+from unittest import result
+
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.Player import Player
 from schemas.Players import PlayerCreate, PlayerResponse 
-
+from sqlalchemy import select
 router = APIRouter(
     prefix="/player",
     tags=["player"]
@@ -12,18 +14,24 @@ router = APIRouter(
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[PlayerResponse])
 def get_players(db: Session = Depends(get_db)) -> list[PlayerResponse]:
-    players = db.query(Player).all()
-    return players
+    stmt = select(Player)
+    result = db.execute(stmt).scalars().all()
+    return result
+
+@router.get("/sample", status_code=status.HTTP_200_OK)
+def get_sample(db: Session = Depends(get_db)) -> list[PlayerResponse]:
+  stmt = select(Player)
+  result = db.execute(stmt).scalars().all()
+  print(result)
+  return result
 
 @router.get("/{player_id}", status_code=status.HTTP_200_OK, response_model=PlayerResponse)
 def get_player(player_id: int, db: Session = Depends(get_db)) -> PlayerResponse:
-    player = db.query(Player).filter(Player.id == player_id).first()
-    if not player:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, 
-            detail=f"Player with id {player_id} not found"
-        )
-    return player
+   stmt = select(Player).where(Player.id == player_id)
+   result = db.execute(stmt).scalar_one_or_none()
+   if result is None: 
+    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail={"message": "Player with Provided id not found"})
+   return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=PlayerResponse)
 def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)) -> PlayerResponse:
@@ -32,3 +40,4 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)) -> Pla
     db.commit()
     db.refresh(new_player)
     return new_player
+
